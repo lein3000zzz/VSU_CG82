@@ -3,6 +3,6 @@ module com.cgvsu.rasterizationfxapp {
     requires javafx.fxml;
 
 
-    opens com.cgvsu.rasterizationfxapp to javafx.fxml;
-    exports com.cgvsu.rasterizationfxapp;
+    opens com.cgvsu.protocurvefxapp to javafx.fxml;
+    exports com.cgvsu.protocurvefxapp;
 }
