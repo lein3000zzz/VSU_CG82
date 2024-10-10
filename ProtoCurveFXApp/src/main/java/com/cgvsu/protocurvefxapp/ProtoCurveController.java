@@ -21,8 +21,6 @@ public class ProtoCurveController {
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
-//        LagrangeInterpolation.points.addAll(new Point2D(0, -1), new Point2D(1, 1), new Point2D(4, 1));
-
         canvas.setOnMousePressed(event -> {
             draggedPoint = findPointNearby(event.getX(), event.getY());
         });
@@ -34,8 +32,7 @@ public class ProtoCurveController {
         canvas.setOnMouseReleased(event -> {
             if (draggedPoint != null) {
                 LagrangeInterpolation.points.remove(draggedPoint);
-                Point2D newPoint = new Point2D(event.getX(), event.getY());
-                LagrangeInterpolation.points.add(newPoint);
+                createNewPoint(canvas.getGraphicsContext2D(), event);
             }
             if (findPointNearby(event.getX(), event.getY()) == null) {
                 createNewPoint(canvas.getGraphicsContext2D(), event);

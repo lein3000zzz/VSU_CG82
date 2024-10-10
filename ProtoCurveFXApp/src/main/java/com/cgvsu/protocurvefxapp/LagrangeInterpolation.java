@@ -22,11 +22,14 @@ public class LagrangeInterpolation {
 
         if (points.size() > 1) {
             graphicsContext.setLineWidth(2);
+            Point2D prevXY = null;
             for (int x = 0; x < canvas.getWidth(); x++) {
                 double y = interpolate(x);
-                if (y >= 0 && y < canvas.getHeight()) {
-                    graphicsContext.strokeLine(x, y, x, y);
+                graphicsContext.strokeLine(x, y, x, y);
+                if (prevXY != null && (prevXY.getX() != x || prevXY.getY() != y)) {
+                    graphicsContext.strokeLine(x, y, prevXY.getX(), prevXY.getY());
                 }
+                prevXY = new Point2D(x, y);
             }
         }
     }
@@ -42,7 +45,7 @@ public class LagrangeInterpolation {
         }
         return result;
     }
-
+    // методичка, страница 98
     private static double interpolate(double x) {
         double y = 0;
         int n = points.size();
