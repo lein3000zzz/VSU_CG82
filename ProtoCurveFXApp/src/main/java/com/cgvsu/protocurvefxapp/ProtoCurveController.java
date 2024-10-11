@@ -7,6 +7,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import java.util.Comparator;
+
 public class ProtoCurveController {
 
     @FXML
@@ -14,7 +16,7 @@ public class ProtoCurveController {
     @FXML
     private Canvas canvas;
     final int POINT_RADIUS = 3;
-    Point2D draggedPoint = null;
+    private Point2D draggedPoint = null;
 
     @FXML
     private void initialize() {
@@ -26,6 +28,11 @@ public class ProtoCurveController {
         });
 
         canvas.setOnMouseDragged(event -> {
+            if (draggedPoint != null) {
+                LagrangeInterpolation.points.remove(draggedPoint);
+                draggedPoint = new Point2D(event.getX(), event.getY());
+                LagrangeInterpolation.points.add(draggedPoint);
+            }
             LagrangeInterpolation.redraw(canvas.getGraphicsContext2D(), canvas);
         });
 
