@@ -39,10 +39,11 @@ public class ProtoCurveController {
         canvas.setOnMouseReleased(event -> {
             if (draggedPoint != null) {
                 LagrangeInterpolation.points.remove(draggedPoint);
-                createNewPoint(canvas.getGraphicsContext2D(), event);
+                createPointWithXCheck(event);
             }
             if (findPointNearby(event.getX(), event.getY()) == null) {
-                createNewPoint(canvas.getGraphicsContext2D(), event);
+//                createNewPoint(canvas.getGraphicsContext2D(), event);
+                createPointWithXCheck(event);
             }
             LagrangeInterpolation.redraw(canvas.getGraphicsContext2D(), canvas);
             draggedPoint = null;
@@ -54,6 +55,11 @@ public class ProtoCurveController {
         LagrangeInterpolation.redraw(graphicsContext, canvas);
     }
 
+    private void createNewPointByXY(GraphicsContext graphicsContext, double x, double y) {
+        LagrangeInterpolation.points.add(new Point2D(x, y));
+        LagrangeInterpolation.redraw(graphicsContext, canvas);
+    }
+
     private Point2D findPointNearby(double x, double y) {
         for (Point2D point : LagrangeInterpolation.points) {
             if (Math.hypot(point.getX() - x, point.getY() - y) <= POINT_RADIUS) {
@@ -61,5 +67,28 @@ public class ProtoCurveController {
             }
         }
         return null;
+    }
+    private boolean findPointOnTheSameX(double x) {
+        for (Point2D point : LagrangeInterpolation.points) {
+            if (x == point.getX()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void createPointWithXCheck(MouseEvent event) {
+        if (!findPointOnTheSameX(event.getX()))
+            createNewPoint(canvas.getGraphicsContext2D(), event);
+        else {
+            for (int x = 1; x < canvas.getWidth(); x++) {
+                if (!findPointOnTheSameX(event.getX() + x)) {
+                    createNewPointByXY(canvas.getGraphicsContext2D(), event.getX() + x, event.getY());
+                    break;
+                } else if ((!findPointOnTheSameX(event.getX() - x))) {
+                    createNewPointByXY(canvas.getGraphicsContext2D(), event.getX() - x, event.getY());
+                    break;
+                }
+            }
+        }
     }
 }
