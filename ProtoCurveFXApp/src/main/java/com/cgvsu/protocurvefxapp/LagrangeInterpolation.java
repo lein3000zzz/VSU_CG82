@@ -3,39 +3,14 @@ package com.cgvsu.protocurvefxapp;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
 public class LagrangeInterpolation {
-
-    public static ArrayList<Point2D> points = new ArrayList<>();
-
-    public static void redraw(GraphicsContext graphicsContext, Canvas canvas) {
-        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-        final int POINT_RADIUS = 3;
-        for (Point2D point : points) {
-            graphicsContext.fillOval(
-                    point.getX() - POINT_RADIUS, point.getY() - POINT_RADIUS,
-                    2 * POINT_RADIUS, 2 * POINT_RADIUS);
-        }
-
-        if (points.size() > 1) {
-            graphicsContext.setLineWidth(2);
-            Point2D prevXY = null;
-            for (int x = 0; x < canvas.getWidth(); x++) {
-                double y = interpolate(x);
-                graphicsContext.strokeLine(x, y, x, y);
-                if (prevXY != null && (prevXY.getX() != x || prevXY.getY() != y)) {
-                    graphicsContext.strokeLine(x, y, prevXY.getX(), prevXY.getY());
-                }
-                prevXY = new Point2D(x, y);
-            }
-        }
-    }
-
     // методичка, страница 98
-    private static double calculateLagrangePolynomial(double x, int i) {
+    public static double calculateLagrangePolynomial(double x, int i, ArrayList<Point2D> points) {
         double result = 1;
         int n = points.size();
         for (int j = 0; j < n; j++) {
@@ -46,11 +21,11 @@ public class LagrangeInterpolation {
         return result;
     }
     // методичка, страница 98
-    private static double interpolate(double x) {
+    public static double interpolate(double x, ArrayList<Point2D> points) {
         double y = 0;
         int n = points.size();
         for (int i = 0; i < n; i++) {
-            y += points.get(i).getY() * calculateLagrangePolynomial(x, i);
+            y += points.get(i).getY() * calculateLagrangePolynomial(x, i, points);
         }
         return y;
     }
