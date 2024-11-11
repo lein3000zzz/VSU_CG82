@@ -57,8 +57,8 @@ public class ProtoCurveController {
         drawPoints(graphicsContext, points);
         ArrayList<Point2D> interpolatedPoints = LagrangeInterpolation.calculateLagrangePoints(points, 0, graphicsContext.getCanvas().getWidth(), 0, graphicsContext.getCanvas().getHeight());
 //        DrawLineUtils.drawBresenhamLine(graphicsContext, interpolatedPoints);
-        DrawLineUtils.drawDDALine(graphicsContext, interpolatedPoints);
-//        DrawLineUtils.drawStokeLine(graphicsContext, interpolatedPoints);
+//        DrawLineUtils.drawDDALine(graphicsContext, interpolatedPoints);
+        DrawLineUtils.drawStokeLine(graphicsContext, interpolatedPoints);
     }
 
     private void drawPoints(GraphicsContext graphicsContext, ArrayList<Point2D> points) {
@@ -94,6 +94,7 @@ public class ProtoCurveController {
         points.add(new Point2D(x, y));
         redraw(graphicsContext, points);
     }
+
     private Point2D findPointNearby(double x, double y) {
         for (Point2D point : points) {
             if (Math.hypot(point.getX() - x, point.getY() - y) <= POINT_RADIUS) {
@@ -102,81 +103,4 @@ public class ProtoCurveController {
         }
         return null;
     }
-//    private boolean foundPointOnTheSameX(double x) {
-//        for (Point2D point : points) {
-//            if (Math.abs(x - point.getX()) < 0.1) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-//    private ArrayList<Point2D> calculateLagrangePoints(ArrayList<Point2D> points, double leftBorder, double rightBorder, double lowerBorder, double upperBorder) {
-//        ArrayList<Point2D> interpolatedPoints = new ArrayList<>();
-//        for (double x = leftBorder; x < rightBorder; x += 5) {
-//            double y = LagrangeInterpolation.interpolate(x, points);
-//            if (foundPointOnTheSameX(x)) {
-//                y = getPointYFromTheSameX(x);
-//            }
-//            checkYReq(y, lowerBorder, upperBorder);
-//            interpolatedPoints.add(new Point2D(x, y));
-//        }
-//        return interpolatedPoints;
-//    }
-
-//    public void redraw(GraphicsContext graphicsContext) {
-//        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-//        final int POINT_RADIUS = 3;
-//        for (Point2D point : points) {
-//            graphicsContext.fillOval(
-//                    point.getX() - POINT_RADIUS, point.getY() - POINT_RADIUS,
-//                    2 * POINT_RADIUS, 2 * POINT_RADIUS);
-//        }
-//
-//        PixelWriter pixelWriter = graphicsContext.getPixelWriter();
-//        if (points.size() > 1) {
-//            graphicsContext.setLineWidth(0.75);
-//            Point2D prevXY = null;
-//            for (double x = 0; x < canvas.getWidth() * 2; x += 1) {
-//                double y = LagrangeInterpolation.interpolate(x, points);
-//                y = checkYReq(y);
-//                if (prevXY != null) {
-//                    graphicsContext.strokeLine(x, y, prevXY.getX(), prevXY.getY());
-//                }
-////                pixelWriter.setColor((int) Math.round(x), (int) Math.round(y), Color.RED);
-////                System.out.println(prevXY);
-////                System.out.println("X " + x + " Y " + y);
-//                prevXY = new Point2D(x, y);
-//            }
-//        }
-////        System.out.println(points.get(0));
-////        System.out.println(points);
-//    }
-
-//    private double checkYReq(double y, double lowerBorder, double upperBorder) {
-//        if (y < lowerBorder)
-//            return lowerBorder - 1;
-//        else if (y > upperBorder)
-//            return upperBorder + 1;
-//        else
-//            return y;
-//    }
-//
-//    private double getPointYFromTheSameX(double x) {
-//        for (Point2D point : points) {
-//            if (Math.abs(x - point.getX()) < 1E-5) {
-//                return point.getY();
-//            }
-//        }
-//        return Double.POSITIVE_INFINITY;
-//    }
-
-//    private boolean findPointOnTheSameY(double y) {
-//        for (Point2D point : points) {
-//            if (y == point.getY()) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 }

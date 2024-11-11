@@ -32,7 +32,7 @@ public class LagrangeInterpolation {
 
     public static ArrayList<Point2D> calculateLagrangePoints(ArrayList<Point2D> points, double leftBorder, double rightBorder, double lowerBorder, double upperBorder) {
         ArrayList<Point2D> interpolatedPoints = new ArrayList<>();
-        for (double x = leftBorder; x < rightBorder; x += 1) {
+        for (double x = leftBorder; x < rightBorder; x += 0.5) {
             double y = LagrangeInterpolation.interpolate(x, points);
             if (foundPointOnTheSameX(x, points)) {
                 y = getPointYFromTheSameX(x, points);
