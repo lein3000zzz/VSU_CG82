@@ -30,9 +30,10 @@ public class LagrangeInterpolation {
         return y;
     }
 
+
     public static ArrayList<Point2D> calculateLagrangePoints(ArrayList<Point2D> points, double leftBorder, double rightBorder, double lowerBorder, double upperBorder) {
         ArrayList<Point2D> interpolatedPoints = new ArrayList<>();
-        for (double x = leftBorder; x < rightBorder; x += 0.5) {
+        for (double x = leftBorder; x < rightBorder; x += 2*0.5) {
             double y = LagrangeInterpolation.interpolate(x, points);
             if (foundPointOnTheSameX(x, points)) {
                 y = getPointYFromTheSameX(x, points);
@@ -60,6 +61,21 @@ public class LagrangeInterpolation {
         }
         return Double.POSITIVE_INFINITY;
     }
+
+
+    /*public static boolean foundPointOnTheSameXzzzzz(double x, ArrayList<Point2D> points) {
+        return getPointYFromTheSameXzzzzz(x, points) != null;
+    }
+
+
+    private static Point2D getPointYFromTheSameXzzzzz(double x, ArrayList<Point2D> points) {
+        for (Point2D point : points) {
+            if (Math.abs(x - point.getX()) < 0.1) {
+                return point;
+            }
+        }
+        return null;
+    }*/
 
     private static double checkYReq(double y, double lowerBorder, double upperBorder) {
         if (y < lowerBorder)

@@ -56,9 +56,9 @@ public class ProtoCurveController {
         graphicsContext.clearRect(0, 0, graphicsContext.getCanvas().getWidth(), graphicsContext.getCanvas().getHeight());
         drawPoints(graphicsContext, points);
         ArrayList<Point2D> interpolatedPoints = LagrangeInterpolation.calculateLagrangePoints(points, 0, graphicsContext.getCanvas().getWidth(), 0, graphicsContext.getCanvas().getHeight());
-//        DrawLineUtils.drawBresenhamLine(graphicsContext, interpolatedPoints);
+        DrawLineUtils.drawBresenhamLine(graphicsContext, interpolatedPoints);
 //        DrawLineUtils.drawDDALine(graphicsContext, interpolatedPoints);
-        DrawLineUtils.drawStokeLine(graphicsContext, interpolatedPoints);
+//        DrawLineUtils.drawStokeLine(graphicsContext, interpolatedPoints);
     }
 
     private void drawPoints(GraphicsContext graphicsContext, ArrayList<Point2D> points) {
