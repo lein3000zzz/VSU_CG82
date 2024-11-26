@@ -1,34 +1,38 @@
 package main.java;
 
-import com.cgvsu.model.Model;
+import main.java.com.cgvsu.model.Model;
+import main.java.com.cgvsu.objreader.ObjReader;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
+    public static void main(String[] args) throws IOException {
+        Path fileName1 = Path.of("src\\main\\java\\3DModels\\CaracalCube\\caracal_cube_copy.obj");
+        String fileContent1 = Files.readString(fileName1);
 
-    public static void main(String[] args) {
-        String inputFilePath = "src\\main\\java\\3DModels\\Faceform\\WrapHead.obj";
-        String outputFilePath = "src\\main\\java\\3DModels\\Faceform\\WrapHead_edited.obj";
-        List<Integer> verticesToDelete;
+        System.out.println("Loading model ...");
+        Model model1 = ObjReader.read(fileContent1);
 
-        String deleteVerticesFilePath = "src\\main\\java\\vertices_to_delete.txt";  // Файл с вершинами(опционально)
-        try {
-            verticesToDelete = VertexRemover.readVerticesFromFile(deleteVerticesFilePath);
-        } catch (IOException e) {
-            System.out.println("Couldnt load vertices_to_delete.txt, using default values");
-            verticesToDelete = List.of(1, 2, 3); // Индексы вершин по умолчанию(просто список)
-        }
+        System.out.println("Vertices: " + model1.vertices.size());
+        System.out.println("Texture vertices: " + model1.textureVertices.size());
+        System.out.println("Normals: " + model1.normals.size());
+        System.out.println("Polygons: " + model1.polygons.size());
 
-        try {
-            Reader input = new FileReader(inputFilePath);
-            Writer output = new FileWriter(outputFilePath);
-            VertexRemover.processModel(input, output, verticesToDelete, true, false, true, true);
-            System.out.println("File saved at " + outputFilePath);
-        } catch (IOException e) {
-            System.out.println("An error occured: " + e.getMessage());
-        }
+
+        Path fileName = Path.of("src\\main\\java\\3DModels\\CaracalCube\\caracal_cube.obj");
+        String fileContent = Files.readString(fileName);
+
+        System.out.println("Loading model ...");
+        Model model = ObjReader.read(fileContent);
+
+        VertexRemoverNextGen.processModel(model, List.of(1, 2, 3), true, false, true, true);
+
+        System.out.println("Vertices: " + model.vertices.size());
+        System.out.println("Texture vertices: " + model.textureVertices.size());
+        System.out.println("Normals: " + model.normals.size());
+        System.out.println("Polygons: " + model.polygons.size());
     }
 }

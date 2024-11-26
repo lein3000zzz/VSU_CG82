@@ -1,4 +1,6 @@
-package com.cgvsu.math;
+package main.java.com.cgvsu.math;
+
+import java.util.Objects;
 
 // Это заготовка для собственной библиотеки для работы с линейной алгеброй
 public class Vector3f {
@@ -9,10 +11,33 @@ public class Vector3f {
     }
 
     public boolean equals(Vector3f other) {
-        // todo: желательно, чтобы это была глобальная константа
         final float eps = 1e-7f;
         return Math.abs(x - other.x) < eps && Math.abs(y - other.y) < eps && Math.abs(z - other.z) < eps;
     }
 
     float x, y, z;
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getZ() {
+        return z;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vector3f vector3f)) return false;
+        return Float.compare(x, vector3f.x) == 0 && Float.compare(y, vector3f.y) == 0 && Float.compare(z, vector3f.z) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
+    }
 }

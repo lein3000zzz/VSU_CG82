@@ -1,9 +1,9 @@
-package com.cgvsu.objreader;
+package main.java.com.cgvsu.objreader;
 
-import com.cgvsu.math.Vector2f;
-import com.cgvsu.math.Vector3f;
-import com.cgvsu.model.Model;
-import com.cgvsu.model.Polygon;
+import main.java.com.cgvsu.math.Vector2f;
+import main.java.com.cgvsu.math.Vector3f;
+import main.java.com.cgvsu.model.Model;
+import main.java.com.cgvsu.model.Polygon;
 
 import java.util.ArrayList;
 import java.util.Arrays;

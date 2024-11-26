@@ -1,19 +1,25 @@
 package main.java;
 
 import main.java.com.cgvsu.fileVertexRemover.VertexRemover;
+import main.java.com.cgvsu.model.Model;
+import main.java.com.cgvsu.objreader.ObjReader;
+import main.java.com.cgvsu.objwriter.ObjWriter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.List;
+import java.util.Objects;
 
-class VertexRemoverTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+class VertexRemoverNextGenTest {
 
     @Test
     void processModelOnlyUsedRemain() {
         String separator = System.lineSeparator();
 
-        String inputModel = """
+        String inputFile = """
                 v 1.0 1.0 1.0
                 v 2.0 2.0 2.0
                 v 3.0 3.0 3.0
@@ -21,28 +27,31 @@ class VertexRemoverTest {
                 f 1 2 3
                 f 1 3 4
                 """;
+
+        Model inputModel = ObjReader.read(inputFile);
+
         String expectedOutput = (
                 "v 1.0 1.0 1.0" + separator +
-                "v 3.0 3.0 3.0" + separator +
-                "v 4.0 4.0 4.0" + separator +
-                "f 1 2 3").trim();
-
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
+                        "v 3.0 3.0 3.0" + separator +
+                        "v 4.0 4.0 4.0" + separator +
+                        "f 1 2 3").trim();
 
         try {
-            VertexRemover.processModel(input, output, List.of(2), false, true,true, true);
+            VertexRemoverNextGen.processModel(inputModel, List.of(1), false, true,true, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
+
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+
+        Assertions.assertEquals(inputRes, expectedOutput);
     }
 
     @Test
     void processModelKeepHangingPolygons() {
         String separator = System.lineSeparator();
 
-        String inputModel = """
+        String inputFile = """
                 v 1.0 1.0 1.0
                 v 2.0 2.0 2.0
                 v 3.0 3.0 3.0
@@ -53,27 +62,27 @@ class VertexRemoverTest {
                 """;
         String expectedOutput = (
                 "v 3.0 3.0 3.0" + separator +
-                "v 4.0 4.0 4.0" + separator +
-                "v 5.0 5.0 5.0" + separator +
-                "f 1" + separator +
-                "f 1 2 3").trim();
-
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
+                        "v 4.0 4.0 4.0" + separator +
+                        "v 5.0 5.0 5.0" + separator +
+                        "f 1" + separator +
+                        "f 1 2 3").trim();
+        Model inputModel = ObjReader.read(inputFile);
 
         try {
-            VertexRemover.processModel(input, output, List.of(1, 2), true, false, true, true);
+            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1), true, false, true, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
+
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+        Assertions.assertEquals(expectedOutput, inputRes);
     }
 
     @Test
     void processModelKeepHangingAndCleanUpObsoleteTextures() {
         String separator = System.lineSeparator();
 
-        String inputModel = """
+        String inputFile = """
                 v 1.0 1.0 1.0
                 v 2.0 2.0 2.0
                 v 3.0 3.0 3.0
@@ -107,22 +116,23 @@ class VertexRemoverTest {
                         "f 1/2 2/1" + separator + // третья вершина стала первой
                         "f 1 2 3 4" + separator + // Порядок вершин изменился на -1 для всех вершин после 2
                         "f 6666 777 7777").trim();
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
+        Model inputModel = ObjReader.read(inputFile);
 
         try {
-            VertexRemover.processModel(input, output, List.of(2), true, false, false, true);
+            VertexRemoverNextGen.processModel(inputModel, List.of(1), true, false, false, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
+
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+        Assertions.assertEquals(expectedOutput, inputRes);
     }
 
     @Test
     void processModelRemoveAll() {
         String separator = System.lineSeparator();
 
-        String inputModel = """
+        String inputFile = """
                 v 1.0 1.0 1.0
                 v 2.0 2.0 2.0
                 v 3.0 3.0 3.0
@@ -135,23 +145,23 @@ class VertexRemoverTest {
                 """;
         String expectedOutput = (
                 "").trim();
-
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
+        Model inputModel = ObjReader.read(inputFile);
 
         try {
-            VertexRemover.processModel(input, output, List.of(1, 2, 3), false, true, true, true);
+            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), true, false, true, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
+
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+        Assertions.assertEquals(expectedOutput, inputRes);
     }
 
     @Test
     void processModelKeepVtAndVn() {
         String separator = System.lineSeparator();
 
-        String inputModel = """
+        String inputFile = """
                 v 1.0 1.0 1.0
                 v 2.0 2.0 2.0
                 v 3.0 3.0 3.0
@@ -167,51 +177,22 @@ class VertexRemoverTest {
                         "vt 0.3 0.4" + separator +
                         "vn 0.0 0.0 1.0" + separator +
                         "vn 1.0 0.0 0.0").trim();
-
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
+        Model inputModel = ObjReader.read(inputFile);
 
         try {
-            VertexRemover.processModel(input, output, List.of(1, 2, 3), false, true, false, false);
+            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, false, false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
-    }
-    @Test
-    void processModelKeepVt() {
-        String separator = System.lineSeparator();
 
-        String inputModel = """
-                v 1.0 1.0 1.0
-                v 2.0 2.0 2.0
-                v 3.0 3.0 3.0
-                vt 0.1 0.2
-                vt 0.3 0.4
-                vn 0.0 0.0 1.0
-                vn 1.0 0.0 0.0
-                f 1/1/1 2/2/2 3/1/1
-                f 2/2/2 3/1/1 1/1/1
-                """;
-        String expectedOutput = (
-                "vt 0.1 0.2" + separator +
-                        "vt 0.3 0.4").trim();
-
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
-
-        try {
-            VertexRemover.processModel(input, output, List.of(1, 2, 3), false, true, true, false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+        Assertions.assertEquals(expectedOutput, inputRes);
     }
     @Test
     void processModelKeepVn() {
         String separator = System.lineSeparator();
 
-        String inputModel = """
+        String inputFile = """
                 v 1.0 1.0 1.0
                 v 2.0 2.0 2.0
                 v 3.0 3.0 3.0
@@ -225,23 +206,51 @@ class VertexRemoverTest {
         String expectedOutput = (
                 "vn 0.0 0.0 1.0" + separator +
                         "vn 1.0 0.0 0.0").trim();
-
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
+        Model inputModel = ObjReader.read(inputFile);
 
         try {
-            VertexRemover.processModel(input, output, List.of(1, 2, 3), false, true, false, true);
+            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, false, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
-    }
 
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+        Assertions.assertEquals(expectedOutput, inputRes);
+    }
+    @Test
+    void processModelKeepVt() {
+        String separator = System.lineSeparator();
+
+        String inputFile = """
+                v 1.0 1.0 1.0
+                v 2.0 2.0 2.0
+                v 3.0 3.0 3.0
+                vt 0.1 0.2
+                vt 0.3 0.4
+                vn 0.0 0.0 1.0
+                vn 1.0 0.0 0.0
+                f 1/1/1 2/2/2 3/1/1
+                f 2/2/2 3/1/1 1/1/1
+                """;
+        String expectedOutput = (
+                "vt 0.1 0.2" + separator +
+                        "vt 0.3 0.4").trim();
+        Model inputModel = ObjReader.read(inputFile);
+
+        try {
+            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, true, false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+        Assertions.assertEquals(expectedOutput, inputRes);
+    }
     @Test
     void processModelMixed() {
         String separator = System.lineSeparator();
 
-        String inputModel = """
+        String inputFile = """
                 v 1.0 1.0 1.0
                 v 2.0 2.0 2.0
                 v 3.0 3.0 3.0
@@ -252,23 +261,22 @@ class VertexRemoverTest {
                 vn 1.0 0.0 0.0
                 vn 0.0 1.0 0.0
                 f 1//1 2//2 3//3
-                f 1/1/1 2/2/2 3/3/3
                 """;
         String expectedOutput = (
                 "v 2.0 2.0 2.0" + separator +
-                "vt 0.3 0.4" + separator +
-                "vn 1.0 0.0 0.0" + separator +
-                "f 1//1" + separator +
-                        "f 1/1/1").trim();
-
-        Reader input = new StringReader(inputModel);
-        Writer output = new StringWriter();
+                        "vt 0.1 0.2" + separator +
+                        "vt 0.3 0.4" + separator +
+                        "vt 0.5 0.6" + separator +
+                        "vn 1.0 0.0 0.0" + separator +
+                        "f 1//1").trim();
+        Model inputModel = ObjReader.read(inputFile);
 
         try {
-            VertexRemover.processModel(input, output, List.of(1, 3), true, false, true, true);
+            VertexRemoverNextGen.processModel(inputModel, List.of(0, 2), true, false, true, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(expectedOutput, output.toString().trim());
+        String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
+        Assertions.assertEquals(expectedOutput, inputRes);
     }
 }

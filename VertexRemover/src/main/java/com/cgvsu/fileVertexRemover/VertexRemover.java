@@ -1,4 +1,4 @@
-package main.java;
+package main.java.com.cgvsu.fileVertexRemover;
 
 import java.io.*;
 import java.util.*;
@@ -12,13 +12,14 @@ public class VertexRemover {
         List<String> faces = new ArrayList<>();
 
         parseModel(input, vertices, textureVertices, normals, faces);
-
+        System.out.println(vertices);
+        System.out.println(textureVertices);
+        System.out.println(faces);
         Map<Integer, Integer> vertexIndexMapping = new HashMap<>();
 
         List<String> newVertices = removeVertices(vertices, verticesToDelete, vertexIndexMapping);
-
         List<String> newFaces = updateFaces(faces, verticesToDelete, vertexIndexMapping, keepHangingFaces);
-
+        System.out.println(newFaces);
         // Отдельно, чтобы было 3 случая: мы оставляем все висячие, мы оставляем только старые висячие, мы не оставляем висячих.
         if (cleanHangingPolygonsAfterwards) {
             Set<Integer> validVertexIndices = collectValidIndices(vertices);
@@ -39,7 +40,7 @@ public class VertexRemover {
             //removeAllUnusedData(normals, normalIndexMapping, newFaces, 2);
             removeObsoleteData(normals, normalIndexMapping, newFaces, 2, initiallyUsedNormalIndices);
         }
-
+        input.close();
         writeModel(output, newVertices, textureVertices, normals, newFaces);
     }
 
@@ -99,7 +100,6 @@ public class VertexRemover {
                         continue; // Пропускаем удалённую вершину
                     }
 
-                    // Формируем новую вершину
                     StringBuilder newVertexData = new StringBuilder();
                     newVertexData.append(vertexIndexMapping.getOrDefault(vertexIndex, vertexIndex)); // Индекс вершины
 
@@ -194,7 +194,6 @@ public class VertexRemover {
                 String[] vertexData = faceVertices[j].split("/");
                 StringBuilder updatedVertexData = new StringBuilder();
 
-                // Обновляем индекс вершины
                 updatedVertexData.append(vertexData[0]);
 
                 // Обновляем индекс текстурной координаты
@@ -242,7 +241,6 @@ public class VertexRemover {
                 String[] vertexData = faceVertices[j].split("/");
 
                 try {
-                    // Проверяем вершину
                     int vertexIndex = Integer.parseInt(vertexData[0]);
                     if (!validVertexIndices.contains(vertexIndex)) {
                         isHangingFace = true;
