@@ -9,7 +9,13 @@ import java.io.*;
 import java.util.*;
 
 public class VertexRemoverNextGen {
-    public static void processModel(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures) throws IOException {
+    public static Model processModelAndReturnNew(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures) {
+        Model modelCopy = new Model(model.getVertices(), model.getTextureVertices(), model.getNormals(), model.getPolygons());
+        processModel(modelCopy, verticesToDelete, keepHangingFaces, cleanHangingPolygonsAfterwards, cleanUpUnusedNormals, cleanUpUnusedTextures);
+        return modelCopy;
+    }
+
+    public static void processModel(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures) {
         List<Vector3f> vertices = model.vertices;
         ArrayList<Vector2f> textureVertices = model.textureVertices;
         ArrayList<Vector3f> normals = model.normals;
@@ -272,14 +278,6 @@ public class VertexRemoverNextGen {
         return newFaces;
     }
 
-//    private static Set<Integer> collectValidIndices(List<Vector3f> data) {
-//        Set<Integer> validIndices = new HashSet<>();
-//        for (int i = 0; i < data.size(); i++) {
-//            validIndices.add(i); // Существовавшие индексы
-//        }
-//        return validIndices;
-//    }
-
     private static Set<Integer> collectValidIndices(List<?> data) {
         Set<Integer> validIndices = new HashSet<>();
         for (int i = 0; i < data.size(); i++) {
@@ -287,27 +285,6 @@ public class VertexRemoverNextGen {
         }
         return validIndices;
     }
-
-//    private static void writeModel(Writer output, List<String> vertices, List<String> textureVertices, List<String> normals, List<String> faces) throws IOException {
-//        try (BufferedWriter writer = new BufferedWriter(output)) {
-//            for (String vertex : vertices) {
-//                writer.write(vertex);
-//                writer.newLine();
-//            }
-//            for (String textureVertex : textureVertices) {
-//                writer.write(textureVertex);
-//                writer.newLine();
-//            }
-//            for (String normal : normals) {
-//                writer.write(normal);
-//                writer.newLine();
-//            }
-//            for (String face : faces) {
-//                writer.write(face);
-//                writer.newLine();
-//            }
-//        }
-//    }
 
     private static <T> void removeAllUnusedData(List<T> data, Map<Integer, Integer> indexMapping, List<Polygon> faces, int componentIndex) { //Удаляем все текстурные вершины и нормали, которые не используются
         Set<Integer> currentlyUsedIndices = new HashSet<>();
@@ -379,16 +356,5 @@ public class VertexRemoverNextGen {
             // Заменяем старую строку полигона на обновленную
             faces.set(i, newFace);
         }
-    }
-
-    public static List<Integer> readVerticesFromFile(String filePath) throws IOException {
-        List<Integer> verticesToDelete = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                verticesToDelete.add(Integer.parseInt(line.trim()));
-            }
-        }
-        return verticesToDelete;
     }
 }
