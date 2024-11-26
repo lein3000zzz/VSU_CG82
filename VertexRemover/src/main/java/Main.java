@@ -1,24 +1,34 @@
+package main.java;
+
 import com.cgvsu.model.Model;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        String inputFilePath = "src\\main\\java\\3DModels\\Faceform\\WrapHead.obj";
+        String outputFilePath = "src\\main\\java\\3DModels\\Faceform\\WrapHead_edited.obj";
+        List<Integer> verticesToDelete;
 
-        Path fileName = Path.of("src\\main\\java\\3DModels\\Faceform\\WrapHead.obj");
-//        Path fileName = Path.of(System.getProperty("user.dir"));
-        System.out.println(fileName);
-        String fileContent = Files.readString(fileName);
+        String deleteVerticesFilePath = "src\\main\\java\\vertices_to_delete.txt";  // Файл с вершинами(опционально)
+        try {
+            verticesToDelete = VertexRemover.readVerticesFromFile(deleteVerticesFilePath);
+        } catch (IOException e) {
+            System.out.println("Couldnt load vertices_to_delete.txt, using default values");
+            verticesToDelete = List.of(1, 2, 3); // Индексы вершин по умолчанию(просто список)
+        }
 
-        System.out.println("Loading model ...");
-        Model model = com.cgvsu.objreader.ObjReader.read(fileContent);
-
-        System.out.println("Vertices: " + model.vertices.size());
-        System.out.println("Texture vertices: " + model.textureVertices.size());
-        System.out.println("Normals: " + model.normals.size());
-        System.out.println("Polygons: " + model.polygons.size());
+        try {
+            Reader input = new FileReader(inputFilePath);
+            Writer output = new FileWriter(outputFilePath);
+            VertexRemover.processModel(input, output, verticesToDelete, true, false, true, true);
+            System.out.println("File saved at " + outputFilePath);
+        } catch (IOException e) {
+            System.out.println("An error occured: " + e.getMessage());
+        }
     }
 }
