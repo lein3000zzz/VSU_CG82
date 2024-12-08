@@ -28,7 +28,7 @@ public class Main {
         System.out.println("Loading model ...");
         Model model = ObjReader.read(fileContent);
 
-        VertexRemoverNextGen.processModel(model, List.of(1, 2, 3), true, false, true, true);
+        VertexRemoverNextGen.processModel(model, List.of(1, 2, 3), true, false, true, true, false);
 
         System.out.println("Vertices: " + model.vertices.size());
         System.out.println("Texture vertices: " + model.textureVertices.size());

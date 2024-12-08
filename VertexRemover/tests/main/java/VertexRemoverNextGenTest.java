@@ -36,11 +36,7 @@ class VertexRemoverNextGenTest {
                         "v 4.0 4.0 4.0" + separator +
                         "f 1 2 3").trim();
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(1), false, true,true, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        VertexRemoverNextGen.processModel(inputModel, List.of(1), false, true,true, true, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
 
@@ -68,11 +64,7 @@ class VertexRemoverNextGenTest {
                         "f 1 2 3").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1), true, false, true, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        VertexRemoverNextGen.processModel(inputModel, List.of(0, 1), true, false, true, true, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
         Assertions.assertEquals(expectedOutput, inputRes);
@@ -118,11 +110,7 @@ class VertexRemoverNextGenTest {
                         "f 6666 777 7777").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(1), true, false, false, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        VertexRemoverNextGen.processModel(inputModel, List.of(1), true, false, false, true, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
         Assertions.assertEquals(expectedOutput, inputRes);
@@ -147,11 +135,7 @@ class VertexRemoverNextGenTest {
                 "").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), true, false, true, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), true, false, true, true, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
         Assertions.assertEquals(expectedOutput, inputRes);
@@ -179,11 +163,7 @@ class VertexRemoverNextGenTest {
                         "vn 1.0 0.0 0.0").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, false, false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, false, false, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
         Assertions.assertEquals(expectedOutput, inputRes);
@@ -208,11 +188,7 @@ class VertexRemoverNextGenTest {
                         "vn 1.0 0.0 0.0").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, false, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, false, true, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
         Assertions.assertEquals(expectedOutput, inputRes);
@@ -237,11 +213,8 @@ class VertexRemoverNextGenTest {
                         "vt 0.3 0.4").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, true, false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, true, false, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
         Assertions.assertEquals(expectedOutput, inputRes);
@@ -271,11 +244,8 @@ class VertexRemoverNextGenTest {
                         "f 1//1").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-        try {
-            VertexRemoverNextGen.processModel(inputModel, List.of(0, 2), true, false, true, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        VertexRemoverNextGen.processModel(inputModel, List.of(0, 2), true, false, true, true, false);
+
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());
         Assertions.assertEquals(expectedOutput, inputRes);
     }

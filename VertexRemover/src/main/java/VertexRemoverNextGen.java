@@ -9,13 +9,29 @@ import java.io.*;
 import java.util.*;
 
 public class VertexRemoverNextGen {
-    public static Model processModelAndReturnNew(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures) {
+    public static void processModelCleanPolygonsAndObsoleteNormals(Model model, List<Integer> verticesToDelete) {
+        processModel(model, verticesToDelete, false, true, true, false, false);
+    }
+
+    public static void processModelCleanPolygonsAndObsoleteTextures(Model model, List<Integer> verticesToDelete) {
+        processModel(model, verticesToDelete, false, true, false, true, false);
+    }
+
+    public static void processModelAndDoNothing(Model model, List<Integer> verticesToDelete) {
+        processModel(model, verticesToDelete, true, false, false, false, false);
+    }
+
+    public static void processModelAndCleanEverything(Model model, List<Integer> verticesToDelete) {
+        processModel(model, verticesToDelete, false, true, true, true, true);
+    }
+
+    public static Model processModelAndReturnNew(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures, boolean cleanAllUnused) {
         Model modelCopy = new Model(model.getVertices(), model.getTextureVertices(), model.getNormals(), model.getPolygons());
-        processModel(modelCopy, verticesToDelete, keepHangingFaces, cleanHangingPolygonsAfterwards, cleanUpUnusedNormals, cleanUpUnusedTextures);
+        processModel(modelCopy, verticesToDelete, keepHangingFaces, cleanHangingPolygonsAfterwards, cleanUpUnusedNormals, cleanUpUnusedTextures, cleanAllUnused);
         return modelCopy;
     }
 
-    public static void processModel(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures) {
+    public static void processModel(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures, boolean cleanAllUnused) {
         List<Vector3f> vertices = model.vertices;
         ArrayList<Vector2f> textureVertices = model.textureVertices;
         ArrayList<Vector3f> normals = model.normals;
@@ -37,16 +53,19 @@ public class VertexRemoverNextGen {
         if (cleanUpUnusedTextures) {
             Set<Integer> initiallyUsedTextureIndices = collectInitiallyUsedIndices(faces, 1);
             Map<Integer, Integer> textureIndexMapping = new HashMap<>();
-            //removeAllUnusedData(textureVertices, textureIndexMapping, newFaces, 1);
-            removeObsoleteData(textureVertices, textureIndexMapping, newFaces, 1, initiallyUsedTextureIndices);
+            if (cleanAllUnused)
+                removeAllUnusedData(textureVertices, textureIndexMapping, newFaces, 1);
+            else
+                removeObsoleteData(textureVertices, textureIndexMapping, newFaces, 1, initiallyUsedTextureIndices);
         }
-
 
         if (cleanUpUnusedNormals) {
             Set<Integer> initiallyUsedNormalIndices = collectInitiallyUsedIndices(faces, 2);
             Map<Integer, Integer> normalIndexMapping = new HashMap<>();
-            //removeAllUnusedData(normals, normalIndexMapping, newFaces, 2);
-            removeObsoleteData(normals, normalIndexMapping, newFaces, 2, initiallyUsedNormalIndices);
+            if (cleanAllUnused)
+                removeAllUnusedData(normals, normalIndexMapping, newFaces, 2);
+            else
+                removeObsoleteData(normals, normalIndexMapping, newFaces, 2, initiallyUsedNormalIndices);
         }
 
 
@@ -184,7 +203,6 @@ public class VertexRemoverNextGen {
             ArrayList<Integer> newFaceTextures = new ArrayList<>();
             ArrayList<Integer> newFaceNormals = new ArrayList<>();
 
-
             for (int j = 0; j < faceVertices.size(); j++) {
 
                 newFaceVertices.add(faceVertices.get(j));
@@ -221,7 +239,6 @@ public class VertexRemoverNextGen {
     private static ArrayList<Polygon> cleanFaces(ArrayList<Polygon> faces, Set<Integer> validVertexIndices, Set<Integer> validTextureIndices, Set<Integer> validNormalIndices) {
         ArrayList<Polygon> newFaces = new ArrayList<>();
         for (Polygon face : faces) {
-//            String[] faceVertices = face.split(" ");
             boolean isHangingFace = false;
             Polygon newFace = new Polygon();
 
@@ -233,7 +250,6 @@ public class VertexRemoverNextGen {
             ArrayList<Integer> newFaceTextures = new ArrayList<>();
             ArrayList<Integer> newFaceNormals = new ArrayList<>();
             for (int j = 0; j < faceVertices.size(); j++) {
-//                String[] vertexData = faceVertices[j].split("/");
 
                 int vertexIndex = faceVertices.get(j);
                 if (!validVertexIndices.contains(vertexIndex)) {

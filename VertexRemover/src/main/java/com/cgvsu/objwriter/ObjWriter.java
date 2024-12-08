@@ -57,7 +57,7 @@ public class ObjWriter {
         // Форматируем грани
         for (Polygon face : model.getPolygons()) {
             result.append("f");
-//            for (int vertexIndex : face.getVertexIndices()) {
+            //            for (int vertexIndex : face.getVertexIndices()) {
             boolean textureIsEmpty = true;
             for (int i = 0; i < face.getVertexIndices().size(); i++) {
                 int vertexIndex = face.getVertexIndices().get(i);
