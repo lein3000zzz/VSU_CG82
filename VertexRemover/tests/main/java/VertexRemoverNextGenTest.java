@@ -213,7 +213,6 @@ class VertexRemoverNextGenTest {
                         "vt 0.3 0.4").trim();
         Model inputModel = ObjReader.read(inputFile);
 
-
         VertexRemoverNextGen.processModel(inputModel, List.of(0, 1, 2), false, true, true, false, false);
 
         String inputRes = ObjWriter.formatOutput(inputModel, System.lineSeparator());

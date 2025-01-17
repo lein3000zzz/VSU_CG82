@@ -9,6 +9,10 @@ import java.io.*;
 import java.util.*;
 
 public class VertexRemoverNextGen {
+    public static void processModelAndCleanAllUnusedElements(Model model, List<Integer> verticesToDelete, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures) {
+        processModel(model, verticesToDelete, false, true, cleanUpUnusedNormals, cleanUpUnusedTextures, true);
+    }
+
     public static void processModelCleanPolygonsAndObsoleteNormals(Model model, List<Integer> verticesToDelete) {
         processModel(model, verticesToDelete, false, true, true, false, false);
     }
@@ -32,10 +36,10 @@ public class VertexRemoverNextGen {
     }
 
     public static void processModel(Model model, List<Integer> verticesToDelete, boolean keepHangingFaces, boolean cleanHangingPolygonsAfterwards, boolean cleanUpUnusedNormals, boolean cleanUpUnusedTextures, boolean cleanAllUnused) {
-        List<Vector3f> vertices = model.vertices;
-        ArrayList<Vector2f> textureVertices = model.textureVertices;
-        ArrayList<Vector3f> normals = model.normals;
-        List<Polygon> faces = model.polygons;
+        List<Vector3f> vertices = model.getVertices();
+        ArrayList<Vector2f> textureVertices = model.getTextureVertices();
+        ArrayList<Vector3f> normals = model.getNormals();
+        List<Polygon> faces = model.getPolygons();
 
         Map<Integer, Integer> vertexIndexMapping = new HashMap<>();
 
@@ -68,11 +72,58 @@ public class VertexRemoverNextGen {
                 removeObsoleteData(normals, normalIndexMapping, newFaces, 2, initiallyUsedNormalIndices);
         }
 
-
         model.setVertices(newVertices);
         model.setNormals(normals);
         model.setTextureVertices(textureVertices);
         model.setPolygons(newFaces);
+//
+//        vertexValidation(model);
+    }
+
+    public static void vertexValidation(Model model) {
+        ArrayList<Vector3f> vertices = model.getVertices();
+        ArrayList<Polygon> polygons = model.getPolygons();
+
+        // Определяем, какие вершины используются
+        Set<Integer> usedVertexIndices = new HashSet<>();
+        for (Polygon polygon : polygons) {
+            usedVertexIndices.addAll(polygon.getVertexIndices());
+        }
+
+        // Создаем новую нумерацию для используемых вершин
+        Map<Integer, Integer> newIndexMapping = new HashMap<>();
+        ArrayList<Vector3f> newVertices = new ArrayList<>();
+        int newIndex = 0;
+
+        for (int i = 0; i < vertices.size(); i++) {
+            if (usedVertexIndices.contains(i)) {
+                newIndexMapping.put(i, newIndex); // Сопоставляем старый индекс с новым
+                newVertices.add(vertices.get(i)); // Добавляем вершину в новый список
+                newIndex++;
+            }
+        }
+
+        // Обновляем индексы вершин в полигонах
+        ArrayList<Polygon> updatedPolygons = new ArrayList<>();
+        for (Polygon polygon : polygons) {
+            List<Integer> oldIndices = polygon.getVertexIndices();
+            ArrayList<Integer> updatedIndices = new ArrayList<>();
+
+            for (int oldIndex : oldIndices) {
+                updatedIndices.add(newIndexMapping.get(oldIndex)); // Преобразуем старый индекс в новый
+            }
+
+            // Создаем новый полигон с обновленными индексами
+            Polygon updatedPolygon = new Polygon();
+            updatedPolygon.setVertexIndices(updatedIndices);
+            updatedPolygon.setNormalIndices(polygon.getNormalIndices());
+            updatedPolygon.setTextureVertexIndices(polygon.getTextureVertexIndices());
+            updatedPolygons.add(updatedPolygon);
+        }
+
+       // Устанавливаем обновленные данные в модель
+        model.setVertices(newVertices);
+        model.setPolygons(updatedPolygons);
     }
 
 

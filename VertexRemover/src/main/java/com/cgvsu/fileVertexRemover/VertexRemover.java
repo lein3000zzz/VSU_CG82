@@ -382,12 +382,13 @@ public class VertexRemover {
 
     public static List<Integer> readVerticesFromFile(String filePath) throws IOException {
         List<Integer> verticesToDelete = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                verticesToDelete.add(Integer.parseInt(line.trim()));
+        try (Scanner scanner = new Scanner(new FileReader(filePath))) {
+            while (scanner.hasNext()) {
+                verticesToDelete.add(scanner.nextInt());
             }
         }
+//        System.out.println((verticesToDelete.toString().replace('[', ' ').replace(']', ' ').trim()));
+        System.out.println(verticesToDelete.toString().substring(1, verticesToDelete.toString().length() - 1));
         return verticesToDelete;
     }
 }
